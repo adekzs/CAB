@@ -11,7 +11,7 @@ import android.widget.Toast;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class WelcomeActivity extends AppCompatActivity {
+public class SignInActivity extends AppCompatActivity {
 
     private static final String TAG = "WelcomeActivity";
 
@@ -22,7 +22,7 @@ public class WelcomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_welcome);
+        setContentView(R.layout.activity_signin);
 
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
@@ -36,7 +36,7 @@ public class WelcomeActivity extends AppCompatActivity {
 
     public void signIn(View view) {
         String emailStr = email.getEditText().getText().toString();
-        String passwordStr = email.getEditText().getText().toString();
+        String passwordStr = password.getEditText().getText().toString();
         signIn(emailStr,passwordStr);
     }
 
@@ -44,12 +44,20 @@ public class WelcomeActivity extends AppCompatActivity {
         mAuth.signInWithEmailAndPassword(emailStr, passwordStr)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
+
                         Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
+                        goToMapActivity();
                         Log.d(TAG, "signIn: Sign In successful");
                     } else {
                         Toast.makeText(this, "Login not successful", Toast.LENGTH_SHORT).show();
                         Log.d(TAG, "signIn: Sign In UNSUCCESSFUL"+task.getException().getMessage());
                     }
                 });
+    }
+
+    private void goToMapActivity() {
+        Intent mapIntent = new Intent(this, CustomersMapActivity.class);
+        startActivity(mapIntent);
+        finish();
     }
 }

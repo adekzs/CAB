@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/color3"
     android:padding="20dp"
-    tools:context=".WelcomeActivity">
+    tools:context=".SignInActivity">
 
     <androidx.constraintlayout.utils.widget.ImageFilterView
         android:id="@+id/logo"

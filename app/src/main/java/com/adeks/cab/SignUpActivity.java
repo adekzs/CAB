@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
@@ -27,6 +28,7 @@ public class SignUpActivity extends AppCompatActivity {
     TextInputLayout email;
     TextInputLayout password;
     TextInputLayout confirmPassword;
+    CircularProgressIndicator progressIndicator;
 
     private FirebaseAuth mAuth;
 
@@ -39,6 +41,8 @@ public class SignUpActivity extends AppCompatActivity {
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
         confirmPassword = findViewById(R.id.conf_password);
+        mAuth = FirebaseAuth.getInstance();
+        progressIndicator = findViewById(R.id.indicator);
     }
 
     @Override
@@ -54,22 +58,25 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     public void signUp(View view) {
+        progressIndicator.setVisibility(View.VISIBLE);
         String emailString = email.getEditText().getText().toString();
-        String fNameString = firstName.getEditText().getText().toString();
-        String lNameString = lastName.getEditText().getText().toString();
+//        String fNameString = firstName.getEditText().getText().toString();
+//        String lNameString = lastName.getEditText().getText().toString();
         String passwordString = password.getEditText().getText().toString();
-        String confirmPasswordStr = confirmPassword.getEditText().getText().toString();
+//        String confirmPasswordStr = confirmPassword.getEditText().getText().toString();
 
         mAuth.createUserWithEmailAndPassword(emailString, passwordString)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        Log.d(TAG, "onComplete: created user");
-                        FirebaseUser user  = mAuth.getCurrentUser();
+                        Toast.makeText(SignUpActivity.this, "Registration Successful", Toast.LENGTH_SHORT)
+                            .show();
+
                     } else {
                         Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                        Toast.makeText(SignUpActivity.this, "Authentication failed.",
+                        Toast.makeText(SignUpActivity.this,     "Authentication failed.",
                                 Toast.LENGTH_SHORT).show();
                     }
+                    progressIndicator.setVisibility(View.INVISIBLE);
                 });
 
 
