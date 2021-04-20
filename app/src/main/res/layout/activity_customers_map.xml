@@ -9,11 +9,13 @@
 
     <Button
         android:id="@+id/settings_btn"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
+        android:background="@color/color1"
         android:text="Settings"
+        android:onClick="goToSettings"
         app:layout_constraintEnd_toStartOf="@+id/logout_btn"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,9 +23,11 @@
 
     <Button
         android:id="@+id/logout_btn"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
+        android:background="@color/color1"
         android:text="logout"
+        android:onClick="logoutCustomer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -42,7 +46,9 @@
         android:id="@+id/call_cab_btn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:background="@color/color1"
         android:text="call a cab"
+        android:onClick="callCab"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

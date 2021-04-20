@@ -10,6 +10,8 @@ import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class SignInActivity extends AppCompatActivity {
 
@@ -19,6 +21,8 @@ public class SignInActivity extends AppCompatActivity {
     TextInputLayout password;
 
     FirebaseAuth mAuth;
+    private DatabaseReference customerDatabaseRef;
+    private String onlineCustomerId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,6 +31,7 @@ public class SignInActivity extends AppCompatActivity {
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
         mAuth = FirebaseAuth.getInstance();
+
     }
 
     public void openRegisterActivity(View view) {
@@ -44,9 +49,13 @@ public class SignInActivity extends AppCompatActivity {
         mAuth.signInWithEmailAndPassword(emailStr, passwordStr)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
+                        onlineCustomerId = mAuth.getCurrentUser().getUid();
+                        customerDatabaseRef = FirebaseDatabase.getInstance().getReference()
+                                .child("users").child("customers").child(onlineCustomerId);
+                        customerDatabaseRef.setValue(true);
 
-                        Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
                         goToMapActivity();
+                        Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
                         Log.d(TAG, "signIn: Sign In successful");
                     } else {
                         Toast.makeText(this, "Login not successful", Toast.LENGTH_SHORT).show();

@@ -3,6 +3,7 @@ package com.adeks.cab;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,6 +17,8 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.EnumMap;
 
@@ -30,6 +33,9 @@ public class SignUpActivity extends AppCompatActivity {
     TextInputLayout confirmPassword;
     CircularProgressIndicator progressIndicator;
 
+
+
+
     private FirebaseAuth mAuth;
 
     @Override
@@ -42,6 +48,8 @@ public class SignUpActivity extends AppCompatActivity {
         password = findViewById(R.id.password);
         confirmPassword = findViewById(R.id.conf_password);
         mAuth = FirebaseAuth.getInstance();
+
+
         progressIndicator = findViewById(R.id.indicator);
     }
 
@@ -68,6 +76,7 @@ public class SignUpActivity extends AppCompatActivity {
         mAuth.createUserWithEmailAndPassword(emailString, passwordString)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
+                        gotoSignInActivity();
                         Toast.makeText(SignUpActivity.this, "Registration Successful", Toast.LENGTH_SHORT)
                             .show();
 
@@ -80,5 +89,10 @@ public class SignUpActivity extends AppCompatActivity {
                 });
 
 
+    }
+
+    private void gotoSignInActivity() {
+        Intent intent = new Intent(SignUpActivity.this, SignInActivity.class);
+        startActivity(intent);
     }
 }
