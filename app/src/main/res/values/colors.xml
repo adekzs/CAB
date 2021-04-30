@@ -10,4 +10,5 @@
     <color name="color1">#ff12b6</color>
     <color name="color2">#c880ff</color>
     <color name="color3">#FFFFFFFF</color>
+    <color name="red">#FF0000</color>
 </resources>

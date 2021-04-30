@@ -21,8 +21,7 @@ public class SignInActivity extends AppCompatActivity {
     TextInputLayout password;
 
     FirebaseAuth mAuth;
-    private DatabaseReference customerDatabaseRef;
-    private String onlineCustomerId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,11 +48,6 @@ public class SignInActivity extends AppCompatActivity {
         mAuth.signInWithEmailAndPassword(emailStr, passwordStr)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        onlineCustomerId = mAuth.getCurrentUser().getUid();
-                        customerDatabaseRef = FirebaseDatabase.getInstance().getReference()
-                                .child("users").child("customers").child(onlineCustomerId);
-                        customerDatabaseRef.setValue(true);
-
                         goToMapActivity();
                         Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
                         Log.d(TAG, "signIn: Sign In successful");

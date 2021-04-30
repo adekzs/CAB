@@ -26,8 +26,7 @@ public class SignUpActivity extends AppCompatActivity {
 
     private static final String TAG = "SignUpActivity";
 
-    TextInputLayout firstName;
-    TextInputLayout lastName;
+
     TextInputLayout email;
     TextInputLayout password;
     TextInputLayout confirmPassword;
@@ -37,13 +36,13 @@ public class SignUpActivity extends AppCompatActivity {
 
 
     private FirebaseAuth mAuth;
+    private DatabaseReference customerDatabaseRef;
+    private String onlineCustomerId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up2);
-        firstName = findViewById(R.id.f_name);
-        lastName = findViewById(R.id.last_name);
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
         confirmPassword = findViewById(R.id.conf_password);
@@ -68,26 +67,31 @@ public class SignUpActivity extends AppCompatActivity {
     public void signUp(View view) {
         progressIndicator.setVisibility(View.VISIBLE);
         String emailString = email.getEditText().getText().toString();
-//        String fNameString = firstName.getEditText().getText().toString();
-//        String lNameString = lastName.getEditText().getText().toString();
+
         String passwordString = password.getEditText().getText().toString();
-//        String confirmPasswordStr = confirmPassword.getEditText().getText().toString();
+        String confirmPasswordStr = confirmPassword.getEditText().getText().toString();
+        if (passwordString.equals(confirmPasswordStr)) {
+            mAuth.createUserWithEmailAndPassword(emailString, passwordString)
+                    .addOnCompleteListener(this, task -> {
+                        if (task.isSuccessful()) {
+                            onlineCustomerId = mAuth.getCurrentUser().getUid();
+                            customerDatabaseRef = FirebaseDatabase.getInstance().getReference()
+                                    .child("users").child("customers").child(onlineCustomerId);
+                            customerDatabaseRef.setValue(true);
+                            gotoSignInActivity();
+                            Toast.makeText(SignUpActivity.this, "Registration Successful", Toast.LENGTH_SHORT)
+                                    .show();
 
-        mAuth.createUserWithEmailAndPassword(emailString, passwordString)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        gotoSignInActivity();
-                        Toast.makeText(SignUpActivity.this, "Registration Successful", Toast.LENGTH_SHORT)
-                            .show();
-
-                    } else {
-                        Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                        Toast.makeText(SignUpActivity.this,     "Authentication failed.",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                    progressIndicator.setVisibility(View.INVISIBLE);
-                });
-
+                        } else {
+                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                            Toast.makeText(SignUpActivity.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                        progressIndicator.setVisibility(View.INVISIBLE);
+                    });
+        } else {
+            Toast.makeText(this, "Your password is not the same as confirm password", Toast.LENGTH_SHORT).show();
+        }
 
     }
 

@@ -76,7 +76,7 @@ public class SettingActivity extends AppCompatActivity {
         circularProgress = findViewById(R.id.circular_prog);
 
 
-
+        getUserInformation();
     }
 
     public void gotoMapActivity(View view) {
@@ -100,8 +100,8 @@ public class SettingActivity extends AppCompatActivity {
         } else {
             HashMap<String, Object> userMap = new HashMap<>();
             userMap.put("uid", mAuth.getCurrentUser().getUid());
-            userMap.put("name", nameEditLayout.getEditText().toString());
-            userMap.put("phone", phoneInputLayout.getEditText().toString());
+            userMap.put("name", nameEditLayout.getEditText().getText().toString());
+            userMap.put("phone", phoneInputLayout.getEditText().getText().toString());
 
             databaseReference.child(mAuth.getCurrentUser().getUid()).updateChildren(userMap);
             Intent mapActivityIntent = new Intent(SettingActivity.this, CustomersMapActivity.class);
@@ -135,7 +135,7 @@ public class SettingActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(nameEditLayout.getEditText().getText().toString()) ||
                 TextUtils.isEmpty(phoneInputLayout.getEditText().getText().toString())) {
             Toast.makeText(this, "Please fill in all fields",Toast.LENGTH_SHORT).show();
-        } else if (checker.equals("checked")) {
+        } else if (checker.equals("clicked")) {
             uploadProfilePicture();
         }
     }
@@ -163,8 +163,8 @@ public class SettingActivity extends AppCompatActivity {
 
                         HashMap<String, Object> userMap = new HashMap<>();
                         userMap.put("uid", mAuth.getCurrentUser().getUid());
-                        userMap.put("name", nameEditLayout.getEditText().toString());
-                        userMap.put("phone", phoneInputLayout.getEditText().toString());
+                        userMap.put("name", nameEditLayout.getEditText().getText().toString());
+                        userMap.put("phone", phoneInputLayout.getEditText().getText().toString());
                         userMap.put("image", myUrl);
 
                         databaseReference.child(mAuth.getCurrentUser().getUid()).updateChildren(userMap);

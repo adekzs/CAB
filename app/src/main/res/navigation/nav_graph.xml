@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/FirstFragment">
+
+    <fragment
+        android:id="@+id/FirstFragment"
+        android:name="com.adeks.cab.MainFragment"
+        android:label="@string/first_fragment_label"
+        tools:layout="@layout/fragment_first">
+        <action
+            android:id="@+id/action_FirstFragment_to_SecondFragment"
+            app:destination="@id/SecondFragment" />
+        <action
+            android:id="@+id/action_FirstFragment_to_customerRequestFragment"
+            app:destination="@id/customerRequestFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/SecondFragment"
+        android:name="com.adeks.cab.SignInFragment"
+        android:label="@string/second_fragment_label"
+        tools:layout="@layout/fragment_second">
+        <action
+            android:id="@+id/action_SecondFragment_to_registerDriverFragment"
+            app:destination="@id/registerDriverFragment" />
+        <action
+            android:id="@+id/action_SecondFragment_to_customerRequestFragment"
+            app:destination="@id/customerRequestFragment" />
+        <argument
+            android:name="isDriver"
+            app:argType="boolean" />
+        <action
+            android:id="@+id/action_SecondFragment_to_orderDetailsFragment"
+            app:destination="@id/orderDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/driversFragment"
+        android:name="com.adeks.cab.DriversFragment"
+        android:label="fragment_drivers_list"
+        tools:layout="@layout/fragment_drivers_list" >
+        <action
+            android:id="@+id/action_driversFragment_to_orderDetailsFragment"
+            app:destination="@id/orderDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/orderDetailsFragment"
+        android:name="com.adeks.cab.OrderDetailsFragment"
+        android:label="fragment_order_details"
+        tools:layout="@layout/fragment_order_details" >
+        <action
+            android:id="@+id/action_orderDetailsFragment_to_driverDetailsFragment"
+            app:destination="@id/driverDetailsFragment" />
+        <action
+            android:id="@+id/action_orderDetailsFragment_to_driversFragment"
+            app:destination="@id/driversFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/driverDetailsFragment"
+        android:name="com.adeks.cab.DriverDetailsFragment"
+        android:label="fragment_driver_details"
+        tools:layout="@layout/fragment_driver_details" >
+        <action
+            android:id="@+id/action_driverDetailsFragment_to_driversFragment"
+            app:destination="@id/driversFragment" />
+        <action
+            android:id="@+id/action_driverDetailsFragment_to_orderDetailsFragment"
+            app:destination="@id/orderDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/registerDriverFragment"
+        android:name="com.adeks.cab.RegisterDriverFragment"
+        android:label="fragment_register_driver"
+        tools:layout="@layout/fragment_register_driver" >
+        <action
+            android:id="@+id/action_registerDriverFragment_to_customerRequestFragment"
+            app:destination="@id/customerRequestFragment" />
+        <argument
+            android:name="isDriver"
+            app:argType="boolean" />
+        <action
+            android:id="@+id/action_registerDriverFragment_to_orderDetailsFragment"
+            app:destination="@id/orderDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/customerRequestFragment"
+        android:name="com.adeks.cab.CustomerRequestFragment"
+        android:label="fragment_customer_request_list"
+        tools:layout="@layout/fragment_customer_request_list" >
+        <action
+            android:id="@+id/action_customerRequestFragment_to_customerDetailsFragment"
+            app:destination="@id/customerDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/customerDetailsFragment"
+        android:name="com.adeks.cab.CustomerDetailsFragment"
+        android:label="fragment_customer_details"
+        tools:layout="@layout/fragment_customer_details" >
+        <action
+            android:id="@+id/action_customerDetailsFragment_to_customerRequestFragment"
+            app:destination="@id/customerRequestFragment" />
+    </fragment>
+</navigation>

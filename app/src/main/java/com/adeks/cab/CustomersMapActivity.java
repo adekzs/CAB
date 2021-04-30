@@ -9,10 +9,14 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.geofire.GeoFire;
@@ -38,9 +42,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.widget.Toast.LENGTH_SHORT;
 
@@ -75,6 +82,11 @@ public class CustomersMapActivity extends FragmentActivity implements OnMapReady
     private GeoQuery geoQuery;
     private Marker pickUpMarker;
 
+    private TextView txtName, txtPhone, txtCar;
+    private CircleImageView profilePic;
+    private RelativeLayout relativeLayout;
+    private String driverPhone;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,6 +104,12 @@ public class CustomersMapActivity extends FragmentActivity implements OnMapReady
         driverLocationRef = FirebaseDatabase.getInstance().getReference().child("Drivers working");
 
         callCab = findViewById(R.id.call_cab_btn);
+
+        txtName = findViewById(R.id.name_driver);
+        txtCar = findViewById(R.id.car_name_driver);
+        txtPhone = findViewById(R.id.phone_driver);
+        relativeLayout = findViewById(R.id.rel1);
+        profilePic = findViewById(R.id.profile_image_driver);
     }
 
     /**
@@ -165,7 +183,6 @@ public class CustomersMapActivity extends FragmentActivity implements OnMapReady
             return;
         }
         LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationrequest, this);
-
     }
 
     @Override
@@ -184,7 +201,6 @@ public class CustomersMapActivity extends FragmentActivity implements OnMapReady
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -211,6 +227,7 @@ public class CustomersMapActivity extends FragmentActivity implements OnMapReady
         if (requestType) {
            cancelCab();
             callCab.setText("Call a cab");
+            relativeLayout.setVisibility(View.GONE);
         } else {
             requestType = true;
             GeoFire geoFire = new GeoFire(customerDatabaseRef);
@@ -221,15 +238,14 @@ public class CustomersMapActivity extends FragmentActivity implements OnMapReady
             callCab.setText("Finding Closest driver...");
             getClosestDriver();
         }
-
-
-
     }
 
     private void cancelCab() {
         requestType = false;
         geoQuery.removeAllListeners();
-        driverLocationRef.removeEventListener(driverLocationRefListener);
+        if (driverLocationRefListener != null) {
+            driverLocationRef.removeEventListener(driverLocationRefListener);
+        }
 
         if (driverFound) {
             driversRef = FirebaseDatabase.getInstance().getReference().child("users")
@@ -306,6 +322,8 @@ public class CustomersMapActivity extends FragmentActivity implements OnMapReady
                         double locationLat = 0;
                         double locationLng = 0;
                         callCab.setText("Driver found");
+                        relativeLayout.setVisibility(View.VISIBLE);
+                        getAssignedDriverInformation();
                         if (driverLocationMap.get(0) != null) {
                             locationLat = Double.parseDouble(driverLocationMap.get(0).toString());
                         }
@@ -346,7 +364,9 @@ public class CustomersMapActivity extends FragmentActivity implements OnMapReady
     }
 
     private void logoutCustomer() {
-        cancelCab();
+        if (requestType) {
+            cancelCab();
+        }
         mAuth.signOut();
         gotoSignInActivity();
     }
@@ -355,5 +375,46 @@ public class CustomersMapActivity extends FragmentActivity implements OnMapReady
         Intent sigInIntent = new Intent(this, SignInActivity.class);
         sigInIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(sigInIntent);
+    }
+
+    private void getAssignedDriverInformation() {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("users")
+                .child("drivers").child(driverFoundId);
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                if (snapshot.exists() && snapshot.getChildrenCount() > 0) {
+                    String name = snapshot.child("name").getValue().toString();
+                    driverPhone = snapshot.child("phone").getValue().toString();
+                    String car = snapshot.child("car").getValue().toString();
+
+                    txtCar.setText(car);
+                    txtName.setText(name);
+                    txtPhone.setText(driverPhone);
+                    if (snapshot.hasChild("image")) {
+                        String image = snapshot.child("image").getValue().toString();
+                        Picasso.get()
+                                .load(image)
+                                .into(profilePic);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    public void callPhone(View view) {
+        if (!TextUtils.isEmpty(driverPhone)) {
+            Intent callIntent = new Intent(Intent.ACTION_CALL);
+            callIntent.setData(Uri.parse("tel:"+driverPhone));//change the number
+            startActivity(callIntent);
+        } else {
+            Toast.makeText(this,"Phone not specified", Toast.LENGTH_SHORT).show();
+        }
     }
 }
