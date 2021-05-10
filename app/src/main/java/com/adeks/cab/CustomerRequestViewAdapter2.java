@@ -27,10 +27,12 @@ public class CustomerRequestViewAdapter2 extends RecyclerView.Adapter<CustomerRe
 
     private final List<User> mValues;
     Context context;
+    String driverKey;
 
-    public CustomerRequestViewAdapter2(List<User> items,Context context) {
+    public CustomerRequestViewAdapter2(List<User> items,Context context , String driverKey) {
         mValues = items;
         this.context = context;
+        this.driverKey = driverKey;
     }
 
     @Override
@@ -76,7 +78,7 @@ public class CustomerRequestViewAdapter2 extends RecyclerView.Adapter<CustomerRe
             custImage = view.findViewById(R.id.customer_pic);
             mView.setOnClickListener(v -> {
                 FragmentManager fragmentManager = ((AppCompatActivity)context).getSupportFragmentManager();
-                DriverRequestFragment dialog =  DriverRequestFragment.newInstance(user);
+                DriverRequestFragment dialog =  DriverRequestFragment.newInstance(user, driverKey);
                 dialog.show(fragmentManager, "driver request");
             });
         }
@@ -85,7 +87,5 @@ public class CustomerRequestViewAdapter2 extends RecyclerView.Adapter<CustomerRe
         public String toString() {
             return super.toString() + " '" + custName.getText() + "'";
         }
-
-
     }
 }

@@ -48,7 +48,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/driverinfo_phone"
         android:layout_width="wrap_content"
         android:layout_height="20dp"
         android:text="Stop:"
@@ -62,8 +62,8 @@
         android:layout_height="20dp"
         android:text="Stop details"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@+id/textView5"
-        app:layout_constraintTop_toBottomOf="@+id/textView5" />
+        app:layout_constraintStart_toStartOf="@+id/driverinfo_phone"
+        app:layout_constraintTop_toBottomOf="@+id/driverinfo_phone" />
 
     <TextView
         android:id="@+id/textView6"
@@ -81,7 +81,7 @@
         android:id="@+id/accept_ride_btn"
         android:layout_width="80dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="60dp"
+        android:layout_marginStart="100dp"
         android:layout_marginTop="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView6"
@@ -94,6 +94,7 @@
         android:layout_marginEnd="64dp"
         app:layout_constraintBottom_toBottomOf="@+id/accept_ride_btn"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/accept_ride_btn"
         app:layout_constraintTop_toTopOf="@+id/accept_ride_btn"
         app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/ic_cancel" />

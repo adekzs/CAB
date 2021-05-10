@@ -41,8 +41,17 @@
         android:label="fragment_drivers_list"
         tools:layout="@layout/fragment_drivers_list" >
         <action
-            android:id="@+id/action_driversFragment_to_orderDetailsFragment"
-            app:destination="@id/orderDetailsFragment" />
+            android:id="@+id/action_driversFragment_to_driverDetailsFragment"
+            app:destination="@id/driverDetailsFragment" />
+        <action
+            android:id="@+id/action_driversFragment_to_FirstFragment"
+            app:destination="@id/FirstFragment" />
+        <argument
+            android:name="startLatitude"
+            app:argType="string" />
+        <argument
+            android:name="startLongitude"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/orderDetailsFragment"
@@ -50,11 +59,14 @@
         android:label="fragment_order_details"
         tools:layout="@layout/fragment_order_details" >
         <action
-            android:id="@+id/action_orderDetailsFragment_to_driverDetailsFragment"
-            app:destination="@id/driverDetailsFragment" />
-        <action
             android:id="@+id/action_orderDetailsFragment_to_driversFragment"
             app:destination="@id/driversFragment" />
+        <action
+            android:id="@+id/action_orderDetailsFragment_to_FirstFragment"
+            app:destination="@id/FirstFragment" />
+        <action
+            android:id="@+id/action_orderDetailsFragment_to_FirstFragment2"
+            app:destination="@id/FirstFragment" />
     </fragment>
     <fragment
         android:id="@+id/driverDetailsFragment"
@@ -67,21 +79,27 @@
         <action
             android:id="@+id/action_driverDetailsFragment_to_orderDetailsFragment"
             app:destination="@id/orderDetailsFragment" />
+        <argument
+            android:name="driver_details"
+            app:argType="com.adeks.cab.models.Driver" />
+        <argument
+            android:name="userKey"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_driverDetailsFragment_to_FirstFragment"
+            app:destination="@id/FirstFragment" />
     </fragment>
     <fragment
         android:id="@+id/registerDriverFragment"
         android:name="com.adeks.cab.RegisterDriverFragment"
         android:label="fragment_register_driver"
         tools:layout="@layout/fragment_register_driver" >
-        <action
-            android:id="@+id/action_registerDriverFragment_to_customerRequestFragment"
-            app:destination="@id/customerRequestFragment" />
         <argument
             android:name="isDriver"
             app:argType="boolean" />
         <action
-            android:id="@+id/action_registerDriverFragment_to_orderDetailsFragment"
-            app:destination="@id/orderDetailsFragment" />
+            android:id="@+id/action_registerDriverFragment_to_registerUserDetailsFragment"
+            app:destination="@id/registerUserDetailsFragment" />
     </fragment>
     <fragment
         android:id="@+id/customerRequestFragment"
@@ -91,6 +109,9 @@
         <action
             android:id="@+id/action_customerRequestFragment_to_customerDetailsFragment"
             app:destination="@id/customerDetailsFragment" />
+        <action
+            android:id="@+id/action_customerRequestFragment_to_FirstFragment"
+            app:destination="@id/FirstFragment" />
     </fragment>
     <fragment
         android:id="@+id/customerDetailsFragment"
@@ -100,5 +121,29 @@
         <action
             android:id="@+id/action_customerDetailsFragment_to_customerRequestFragment"
             app:destination="@id/customerRequestFragment" />
+        <argument
+            android:name="customer_details"
+            app:argType="com.adeks.cab.models.User" />
+        <argument
+            android:name="driverKey"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_customerDetailsFragment_to_FirstFragment"
+            app:destination="@id/FirstFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/registerUserDetailsFragment"
+        android:name="com.adeks.cab.RegisterUserDetailsFragment"
+        android:label="fragment_register_user_details"
+        tools:layout="@layout/fragment_register_user_details" >
+        <action
+            android:id="@+id/action_registerUserDetailsFragment_to_customerRequestFragment"
+            app:destination="@id/customerRequestFragment" />
+        <action
+            android:id="@+id/action_registerUserDetailsFragment_to_orderDetailsFragment"
+            app:destination="@id/orderDetailsFragment" />
+        <argument
+            android:name="isDriver"
+            app:argType="boolean" />
     </fragment>
 </navigation>

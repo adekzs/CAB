@@ -54,13 +54,14 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
+        holder.driver = mValues.get(position);
         holder.uid = mValues.get(position).getId();
         holder.driverKey = mValues.get(position).getKey();
         holder.driverName.setText(mValues.get(position).getName());
         holder.driverCar.setText(mValues.get(position).getCarDetails());
         holder.driverDistance.setText("0 metres");
         String imageUrl = mValues.get(position).getImageUrl();
-        if (imageUrl != null || TextUtils.isEmpty(imageUrl)) {
+        if (imageUrl != null && !TextUtils.isEmpty(imageUrl)) {
             Picasso.get()
                     .load(imageUrl)
                     .into(holder.driverImage);
@@ -76,6 +77,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+        public Driver driver;
         public final View mView;
         public String driverKey;
         public String uid;
@@ -115,14 +117,14 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                 driverRidesRef.child(childKey).child("isAccepted").addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot != null ){
+                        if (snapshot.getValue() != null ){
                             Log.d(TAG, "onDataChange: snapshot is" + snapshot.toString());
                             String value = (String) snapshot.getValue();
                             if (value != null ) {
                                 if (value.equals("true")) {
                                     mProgressDialog.dismiss();
-                                    Navigation.createNavigateOnClickListener(R.id.action_driverDetailsFragment_to_driversFragment)
-                                            .onClick(mView);
+                                    DriversFragmentDirections.ActionDriversFragmentToDriverDetailsFragment action = DriversFragmentDirections.actionDriversFragmentToDriverDetailsFragment(driver, childKey);
+                                    Navigation.findNavController(mView).navigate(action);
                                 } else if (value.equals("false")) {
                                     driverRidesRef.child(childKey).setValue(null);
                                     mProgressDialog.dismiss();

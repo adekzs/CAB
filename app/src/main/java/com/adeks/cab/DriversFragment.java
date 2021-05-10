@@ -9,14 +9,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.adeks.cab.dummy.DummyContent;
 import com.adeks.cab.models.Driver;
@@ -30,6 +35,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -58,6 +64,8 @@ public class DriversFragment extends Fragment {
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private MyItemRecyclerViewAdapter myAdapter;
+    private String startLat;
+    private String startLong;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -80,14 +88,26 @@ public class DriversFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_drivers_list, container, false);
+
+
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
-
+        setHasOptionsMenu(true);
+        startLat = DriversFragmentArgs.fromBundle(getArguments()).getStartLatitude();
+        startLong = DriversFragmentArgs.fromBundle(getArguments()).getStartLongitude();
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         availableDriversRef = FirebaseDatabase.getInstance().getReference().child("available drivers");
         driversRef = FirebaseDatabase.getInstance().getReference().child("users").child("drivers");
+
 
        /* availableDriversRef.addValueEventListener(new ValueEventListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
@@ -120,10 +140,10 @@ public class DriversFragment extends Fragment {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot != null && snapshot.getChildrenCount() > 0) {
-                             String name = snapshot.child("name").getValue().toString();
-                             String phone = snapshot.child("phone").getValue().toString();
-                             String car = snapshot.child("car").getValue().toString();
-                             String image;
+                            String name = snapshot.child("name").getValue().toString();
+                            String phone = snapshot.child("phone").getValue().toString();
+                            String car = snapshot.child("car").getValue().toString();
+                            String image;
                             if (snapshot.hasChild("image")) {
                                 image = snapshot.child("image").getValue().toString();
                             } else {
@@ -132,6 +152,7 @@ public class DriversFragment extends Fragment {
                             final String[] latitude = new String[1];
                             final String[] longitude = new String[1];
                             driversRef.child(value).child("location").addValueEventListener(new ValueEventListener() {
+                                @RequiresApi(api = Build.VERSION_CODES.N)
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                                     if (snapshot != null && snapshot.getChildrenCount() > 0) {
@@ -143,6 +164,23 @@ public class DriversFragment extends Fragment {
                                         Driver driver = new Driver(key, value, name,latitude[0],longitude[0],car, image,phone );
                                         if (!availDrivers.contains(driver)) {
                                             availDrivers.add(driver);
+                                            availDrivers.sort(new Comparator<Driver>() {
+                                                @Override
+                                                public int compare(Driver o1, Driver o2) {
+                                                    Location driver1 = new Location("");
+                                                    driver1.setLatitude(Double.parseDouble(o1.getLatitude()));
+                                                    driver1.setLongitude(Double.parseDouble(o1.getLongitude()));
+
+                                                    Location driver2 = new Location("");
+                                                    driver2.setLatitude(Double.parseDouble(o2.getLatitude()));
+                                                    driver2.setLongitude(Double.parseDouble(o2.getLongitude()));
+
+                                                    Location start = new Location("");
+                                                    start.setLatitude(Double.parseDouble(startLat));
+                                                    start.setLongitude(Double.parseDouble(startLong));
+                                                    return (int) (driver1.distanceTo(start) - driver2.distanceTo(start));
+                                                }
+                                            });
                                         }
                                         Log.d(TAG, "onDataChange: Driver is :"+ driver.toString());
                                         Log.d(TAG, "onDataChange: set size is:"+ availDrivers.size());
@@ -177,8 +215,8 @@ public class DriversFragment extends Fragment {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-                    Optional<Driver> driverRemoved = availDrivers.stream().filter(driver -> driver.getKey().equals(snapshot.getKey()))
-                            .findFirst();
+                Optional<Driver> driverRemoved = availDrivers.stream().filter(driver -> driver.getKey().equals(snapshot.getKey()))
+                        .findFirst();
                 driverRemoved.ifPresent(driver -> availDrivers.remove(driver));
                 if (myAdapter != null) {
                     myAdapter.notifyDataSetChanged();
@@ -196,13 +234,6 @@ public class DriversFragment extends Fragment {
             }
         });
 
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_drivers_list, container, false);
-
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
@@ -216,5 +247,27 @@ public class DriversFragment extends Fragment {
             recyclerView.setAdapter(myAdapter);
         }
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.frag_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_signout:
+                Toast.makeText(getContext(), "Signed out",Toast.LENGTH_SHORT).show();
+                NavHostFragment.findNavController(this)
+                        .popBackStack(R.id.FirstFragment, false);
+        }
+        return true;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
     }
 }

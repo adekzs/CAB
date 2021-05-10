@@ -108,8 +108,7 @@ public class User implements Parcelable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return getKey().equals(user.getKey()) &&
-                getId().equals(user.getId()) &&
+        return  getId().equals(user.getId()) &&
                 Objects.equals(getName(), user.getName()) &&
                 getStart().equals(user.getStart()) &&
                 getStop().equals(user.getStop());

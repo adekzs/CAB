@@ -10,6 +10,9 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -72,6 +75,7 @@ public class OrderDetailsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
          super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
          mAuth = FirebaseAuth.getInstance();
          currentUser = mAuth.getCurrentUser();
          customerRequestRef = FirebaseDatabase.getInstance().getReference().child("customer requests").child(currentUser.getUid());
@@ -116,8 +120,11 @@ public class OrderDetailsFragment extends Fragment {
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
                             Toast.makeText(getContext(), "Ride created",Toast.LENGTH_SHORT).show();
+                            String lat = String.valueOf(startPlace.getLatLng().latitude);
+                            String longtd = String.valueOf(startPlace.getLatLng().longitude);
+                            OrderDetailsFragmentDirections.ActionOrderDetailsFragmentToDriversFragment action = OrderDetailsFragmentDirections.actionOrderDetailsFragmentToDriversFragment(lat, longtd);
                             NavHostFragment.findNavController(OrderDetailsFragment.this)
-                                    .navigate(R.id.action_orderDetailsFragment_to_driversFragment);
+                                    .navigate(action);
                         } else {
                             Toast.makeText(getContext(), "Error creating Ride",Toast.LENGTH_SHORT).show();
                             Log.d(TAG, "onComplete: Ride creation was not successful "+ task.getException().getMessage());
@@ -167,5 +174,28 @@ public class OrderDetailsFragment extends Fragment {
             return;
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.frag_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_signout:
+                Toast.makeText(getContext(), "Signed out",Toast.LENGTH_SHORT).show();
+                NavHostFragment.findNavController(this)
+                        .popBackStack(R.id.FirstFragment, false);
+        }
+        return true;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
     }
 }

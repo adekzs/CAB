@@ -1,10 +1,12 @@
 package com.adeks.cab.models;
 
 import android.location.Location;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import java.util.Objects;
 
-public class Driver {
+public class Driver implements Parcelable {
 
     private String key;
     private String id;
@@ -25,6 +27,29 @@ public class Driver {
         this.imageUrl = imageUrl;
         this.phone = phone;
     }
+
+    protected Driver(Parcel in) {
+        key = in.readString();
+        id = in.readString();
+        name = in.readString();
+        latitude = in.readString();
+        longitude = in.readString();
+        carDetails = in.readString();
+        imageUrl = in.readString();
+        phone = in.readString();
+    }
+
+    public static final Creator<Driver> CREATOR = new Creator<Driver>() {
+        @Override
+        public Driver createFromParcel(Parcel in) {
+            return new Driver(in);
+        }
+
+        @Override
+        public Driver[] newArray(int size) {
+            return new Driver[size];
+        }
+    };
 
     public String getKey() {
         return key;
@@ -111,12 +136,28 @@ public class Driver {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Driver driver = (Driver) o;
-        return Objects.equals(getKey(), driver.getKey()) &&
-                Objects.equals(getId(), driver.getId());
+        return  Objects.equals(getId(), driver.getId());
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(getKey(), getId());
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(key);
+        dest.writeString(id);
+        dest.writeString(name);
+        dest.writeString(latitude);
+        dest.writeString(longitude);
+        dest.writeString(carDetails);
+        dest.writeString(imageUrl);
+        dest.writeString(phone);
     }
 }

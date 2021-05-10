@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import android.text.TextUtils;
@@ -87,21 +88,21 @@ public class RegisterDriverFragment extends Fragment {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
-                                        if (isDriver) {
-                                            String driverId = mAuth.getCurrentUser().getUid();
-                                            DatabaseReference driverDatabaseRef = FirebaseDatabase.getInstance().getReference().child("users")
-                                                    .child("drivers").child(driverId);
-                                            driverDatabaseRef.setValue(true);
-                                            NavHostFragment.findNavController(RegisterDriverFragment.this)
-                                                    .navigate(R.id.action_registerDriverFragment_to_customerRequestFragment);
-                                        } else {
-                                            String customerId = mAuth.getCurrentUser().getUid();
-                                            DatabaseReference driverDatabaseRef = FirebaseDatabase.getInstance().getReference().child("users")
-                                                    .child("customers").child(customerId);
-                                            driverDatabaseRef.setValue(true);
-                                            NavHostFragment.findNavController(RegisterDriverFragment.this)
-                                                    .navigate(R.id.action_registerDriverFragment_to_orderDetailsFragment);
-                                        }
+//                                        if (isDriver) {
+//                                            String driverId = mAuth.getCurrentUser().getUid();
+//                                            DatabaseReference driverDatabaseRef = FirebaseDatabase.getInstance().getReference().child("users")
+//                                                    .child("drivers").child(driverId);
+//
+//
+//                                        } else {
+//                                            String customerId = mAuth.getCurrentUser().getUid();
+//                                            DatabaseReference driverDatabaseRef = FirebaseDatabase.getInstance().getReference().child("users")
+//                                                    .child("customers").child(customerId);
+//                                        }
+                                        RegisterDriverFragmentDirections.ActionRegisterDriverFragmentToRegisterUserDetailsFragment action = RegisterDriverFragmentDirections.
+                                                actionRegisterDriverFragmentToRegisterUserDetailsFragment(isDriver);
+                                        NavHostFragment.findNavController(RegisterDriverFragment.this)
+                                                .navigate(action);
                                     } else {
                                         Toast.makeText(getContext(),task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                                     }
@@ -115,4 +116,5 @@ public class RegisterDriverFragment extends Fragment {
             }
         });
     }
+
 }

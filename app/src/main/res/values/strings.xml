@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">CAB</string>
     <string name="title_activity_customers_map">Map</string>
-    <string name="title_activity_select">SelectActivity</string>
+    <string name="title_activity_select">CAB</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>

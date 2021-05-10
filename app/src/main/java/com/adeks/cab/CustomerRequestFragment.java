@@ -9,14 +9,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.adeks.cab.dummy.DummyContent;
 import com.adeks.cab.models.Place;
@@ -33,6 +38,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -65,6 +71,7 @@ public class CustomerRequestFragment extends Fragment {
     private AirLocation airLocation;
     private List<User> users;
     private CustomerRequestViewAdapter2 customerRequestViewAdapter;
+    private String driverKey;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -73,8 +80,7 @@ public class CustomerRequestFragment extends Fragment {
     public CustomerRequestFragment() {
     }
 
-    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
+
     public static CustomerRequestFragment newInstance(int columnCount) {
         CustomerRequestFragment fragment = new CustomerRequestFragment();
         Bundle args = new Bundle();
@@ -90,6 +96,7 @@ public class CustomerRequestFragment extends Fragment {
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
+        setHasOptionsMenu(true);
 
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
@@ -121,65 +128,82 @@ public class CustomerRequestFragment extends Fragment {
 //
 //            }
 //        });
-        rideAvailableRef.addChildEventListener(new ChildEventListener() {
+        rideAvailableRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.exists()) {
+                    users.clear();
+                    if (customerRequestViewAdapter != null) {
+                        customerRequestViewAdapter.notifyDataSetChanged();
+                    } else {
+                        customerRequestViewAdapter = new CustomerRequestViewAdapter2(users, getContext(), driverKey);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        ChildEventListener childListener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                if (snapshot != null) {
+                if (snapshot.getValue() != null) {
                     Log.d(TAG, "onChildAdded: The snapshot is " + snapshot.toString());
                     String key = snapshot.getKey();
                     Map<String, String> value = (Map<String, String>) snapshot.getValue();
                     String customerRequestId = value.get("user");
-
-                    customerRequestsRef.child(customerRequestId).addValueEventListener(new ValueEventListener() {
-
-
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            if (snapshot != null && snapshot.getChildrenCount() > 0) {
-                                HashMap<String, Object> val = (HashMap<String, Object>) snapshot.getValue();
-                                Log.d(TAG, "onDataChange: value of customer request is" + val.toString());
-                                HashMap<String, Object> startMap = (HashMap<String, Object>) val.get("start");
-                                HashMap<String, Object> stopMap = (HashMap<String, Object>) val.get("stop");
-                                HashMap<String, Double> locationStart = (HashMap<String, Double>) startMap.get("latLng");
-                                HashMap<String, Double> locationStop = (HashMap<String, Double>) stopMap.get("latLng");
-                                Place start = new Place((String) startMap.get("id"), (String) startMap.get("name"),  new LatLng(locationStart.get("latitude"),locationStart.get("longitude")));
-                                Place stop = new Place((String) stopMap.get("id"), (String) stopMap.get("name"), new LatLng(locationStop.get("latitude"), locationStop.get("longitude")));
-                                FirebaseDatabase.getInstance().getReference().child("users").child("customers")
-                                        .child(customerRequestId).addValueEventListener(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        if (snapshot != null) {
-                                            HashMap<String,String> value = (HashMap<String, String>) snapshot.getValue();
-                                            String name = value.get("name");
-                                            String phone = value.get("phone");
-                                            String imageurl = value.containsKey("image") ? value.get("image") : "";
-                                            User user = new User(key, customerRequestId, name, imageurl, phone, start, stop);
-                                            if (!users.contains(user)) {
-                                                Log.d(TAG, "onDataChange: user is" + user);
-                                                users.add(user);
-                                                if (customerRequestViewAdapter != null) {
-                                                    customerRequestViewAdapter.notifyDataSetChanged();
-                                                } else {
-                                                    customerRequestViewAdapter = new CustomerRequestViewAdapter2(users, getContext());
+                    if (customerRequestId != null) {
+                        customerRequestsRef.child(customerRequestId).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (snapshot != null && snapshot.getChildrenCount() > 0) {
+                                    HashMap<String, Object> val = (HashMap<String, Object>) snapshot.getValue();
+                                    Log.d(TAG, "onDataChange: value of customer request is" + val.toString());
+                                    HashMap<String, Object> startMap = (HashMap<String, Object>) val.get("start");
+                                    HashMap<String, Object> stopMap = (HashMap<String, Object>) val.get("stop");
+                                    HashMap<String, Double> locationStart = (HashMap<String, Double>) startMap.get("latLng");
+                                    HashMap<String, Double> locationStop = (HashMap<String, Double>) stopMap.get("latLng");
+                                    Place start = new Place((String) startMap.get("id"), (String) startMap.get("name"), new LatLng(locationStart.get("latitude"), locationStart.get("longitude")));
+                                    Place stop = new Place((String) stopMap.get("id"), (String) stopMap.get("name"), new LatLng(locationStop.get("latitude"), locationStop.get("longitude")));
+                                    FirebaseDatabase.getInstance().getReference().child("users").child("customers")
+                                            .child(customerRequestId).child("profile").addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            if (snapshot.getValue() != null) {
+                                                HashMap<String, String> value = (HashMap<String, String>) snapshot.getValue();
+                                                String name = value.get("name");
+                                                String phone = value.get("phone");
+                                                String imageurl = value.containsKey("image") ? value.get("image") : "";
+                                                User user = new User(key, customerRequestId, name, imageurl, phone, start, stop);
+                                                if (!users.contains(user)) {
+                                                    Log.d(TAG, "onDataChange: user is" + user);
+                                                    users.add(user);
+                                                    if (customerRequestViewAdapter != null) {
+                                                        customerRequestViewAdapter.notifyDataSetChanged();
+                                                    } else {
+                                                        customerRequestViewAdapter = new CustomerRequestViewAdapter2(users, getContext(), driverKey);
+                                                    }
                                                 }
                                             }
                                         }
-                                    }
 
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
 
-                                    }
-                                });
+                                        }
+                                    });
+
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
 
                             }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-
-                        }
-                    });
+                        });
+                    }
                 }
             }
 
@@ -197,13 +221,13 @@ public class CustomerRequestFragment extends Fragment {
                             .findFirst();
                     useRemoved.ifPresent(user -> {
                         users.remove(useRemoved);
-                        if (customerRequestViewAdapter != null)
-                        customerRequestViewAdapter.notifyDataSetChanged();
                     });
-
+                    if (customerRequestViewAdapter != null) {
+                        customerRequestViewAdapter.notifyDataSetChanged();
+                    }
+                }
 
             }
-        }
 
             @Override
             public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
@@ -214,30 +238,9 @@ public class CustomerRequestFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
-        String key = availableDriversRef.child("available drivers").push().getKey();
-        availableDriversRef.child(key).setValue(currentUser.getUid());
-        availableDriversRef.child("driver rides").child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot != null && snapshot.getChildrenCount() > 0) {
-                    snapshot.getChildren().forEach(new Consumer<DataSnapshot>() {
-                        @Override
-                        public void accept(DataSnapshot dataSnapshot) {
-                            String key = dataSnapshot.getKey();
-                            String rideId = (String) dataSnapshot.getValue();
-                            Log.d(TAG, "accept: value is: " + dataSnapshot.toString());
-                        }
-                    });
-                }
-            }
+        };
+        rideAvailableRef.addChildEventListener(childListener);
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
 
 
         airLocation = new AirLocation(getActivity(), new AirLocation.Callback() {
@@ -279,7 +282,7 @@ public class CustomerRequestFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_customer_request_list, container, false);
-
+        driverKey = availableDriversRef.child("available drivers").push().getKey();
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
@@ -289,7 +292,7 @@ public class CustomerRequestFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            customerRequestViewAdapter = new CustomerRequestViewAdapter2(users, context);
+            customerRequestViewAdapter = new CustomerRequestViewAdapter2(users, context, driverKey);
             recyclerView.setAdapter(customerRequestViewAdapter);
         }
         return view;
@@ -298,12 +301,58 @@ public class CustomerRequestFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        ValueEventListener checkisNull  = new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.getValue() != null && snapshot.getChildrenCount() > 0) {
+                    snapshot.getChildren().forEach(new Consumer<DataSnapshot>() {
+                        @Override
+                        public void accept(DataSnapshot dataSnapshot) {
+                            String key = dataSnapshot.getKey();
+                            String rideId = (String) dataSnapshot.getValue();
+                            Log.d(TAG, "accept: value is: " + dataSnapshot.toString());
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        };
+
+        availableDriversRef.child(driverKey).setValue(currentUser.getUid());
+        availableDriversRef.child("driver rides").child(currentUser.getUid()).addValueEventListener(checkisNull);
     }
 
     @Override
     public void onStop() {
         super.onStop();
     }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.frag_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_signout:
+                Toast.makeText(getContext(), "Signed out",Toast.LENGTH_SHORT).show();
+                FirebaseDatabase.getInstance().getReference().child("available drivers").child(driverKey).setValue(null);
+                mAuth.signOut();
+                NavHostFragment.findNavController(this)
+                        .popBackStack(R.id.FirstFragment, false);
+//                NavHostFragment.findNavController(this)
+//                        .navigate(R.id.action_customerRequestFragment_to_FirstFragment);
+        }
+        return true;
+    }
+
 
 
 }
