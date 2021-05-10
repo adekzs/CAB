@@ -23,7 +23,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.adeks.cab.dummy.DummyContent;
 import com.adeks.cab.models.Place;
 import com.adeks.cab.models.User;
 import com.google.android.gms.maps.model.LatLng;
