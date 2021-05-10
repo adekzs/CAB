@@ -8,7 +8,13 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
-
+/**
+ * This is the first fragment that every user sees
+ * after signing into the application
+ *
+ * It gives the user two choices either to sign in as a user
+ * or as a driver
+ * */
 public class MainFragment extends Fragment {
 
     @Override

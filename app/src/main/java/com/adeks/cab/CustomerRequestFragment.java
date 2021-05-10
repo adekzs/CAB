@@ -48,7 +48,8 @@ import java.util.function.Consumer;
 import mumayank.com.airlocationlibrary.AirLocation;
 
 /**
- * A fragment representing a list of Items.
+ * This fragment displays the screen for Customer
+ * requests ie, The start destination, Stop destination
  */
 public class CustomerRequestFragment extends Fragment {
 
@@ -108,25 +109,7 @@ public class CustomerRequestFragment extends Fragment {
         customerRequestsRef = FirebaseDatabase.getInstance().getReference()
                 .child("customer requests");
         users = new ArrayList<>();
-//        rideAvailableRef.addValueEventListener(new ValueEventListener() {
-//            @RequiresApi(api = Build.VERSION_CODES.N)
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                Log.d(TAG, "onDataChange: customer Values:"+ snapshot.toString());
-//                if (snapshot != null ) {
-//                    Log.d(TAG, "onDataChange: customer Values:"+ snapshot.getValue().toString());
-//                    Map<String, Map<String, String>> value = (Map<String, Map<String, String>>) snapshot.getValue();
-//                    value.forEach((k,v) -> {
-//                        Log.d(TAG, "onDataChange:  the key is "+ k + "The value of user is"+v.get("user"));
-//                    });
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
+
         rideAvailableRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -214,7 +197,7 @@ public class CustomerRequestFragment extends Fragment {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-                if (snapshot != null ) {
+                if (snapshot != null) {
                     String key = snapshot.getKey();
                     Optional<User> useRemoved = users.stream().filter(user -> user.getKey().equals(key))
                             .findFirst();
@@ -239,9 +222,6 @@ public class CustomerRequestFragment extends Fragment {
             }
         };
         rideAvailableRef.addChildEventListener(childListener);
-
-
-
         airLocation = new AirLocation(getActivity(), new AirLocation.Callback() {
             @Override
             public void onSuccess(ArrayList<Location> arrayList) {
@@ -300,7 +280,7 @@ public class CustomerRequestFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ValueEventListener checkisNull  = new ValueEventListener() {
+        ValueEventListener checkisNull = new ValueEventListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -341,17 +321,14 @@ public class CustomerRequestFragment extends Fragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_signout:
-                Toast.makeText(getContext(), "Signed out",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Signed out", Toast.LENGTH_SHORT).show();
                 FirebaseDatabase.getInstance().getReference().child("available drivers").child(driverKey).setValue(null);
                 mAuth.signOut();
                 NavHostFragment.findNavController(this)
                         .popBackStack(R.id.FirstFragment, false);
-//                NavHostFragment.findNavController(this)
-//                        .navigate(R.id.action_customerRequestFragment_to_FirstFragment);
         }
         return true;
     }
-
 
 
 }

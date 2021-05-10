@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.adeks.cab.dummy.DummyContent.DummyItem;
 import com.adeks.cab.models.User;
 import com.squareup.picasso.Picasso;
 
@@ -20,8 +19,9 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem}.
- * TODO: Replace the implementation with code for your data type.
+ * {@link RecyclerView.Adapter} that can display a}.
+ * The adapter class for the recycler view of Customer requests
+ * which is displayed in the driver page/screen
  */
 public class CustomerRequestViewAdapter2 extends RecyclerView.Adapter<CustomerRequestViewAdapter2.ViewHolder> {
 

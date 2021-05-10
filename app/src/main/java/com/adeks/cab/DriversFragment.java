@@ -23,7 +23,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.adeks.cab.dummy.DummyContent;
 import com.adeks.cab.models.Driver;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -45,7 +44,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
- * A fragment representing a list of Items.
+ * This fragment displays all the currently logged in and available drivers
+ * that are not working.
  */
 public class DriversFragment extends Fragment {
 

@@ -44,7 +44,10 @@ import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
 /**
- * A simple {@link Fragment} subclass.
+ *The order details fragment creates a screen for the customer
+ * to choose the starting location and also choose  the end location
+ *
+ * It constrains the user to select only places within FUTA
  * Use the {@link OrderDetailsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */

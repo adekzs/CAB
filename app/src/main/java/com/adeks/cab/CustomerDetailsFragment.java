@@ -32,10 +32,13 @@ import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-/**
+/**Customer Details Fragment displays sreen for the  Details
+ * of customer that ordered a cab
+ *
  * A simple {@link Fragment} subclass.
  * Use the {@link CustomerDetailsFragment#newInstance} factory method to
  * create an instance of this fragment.
+ *
  */
 public class CustomerDetailsFragment extends Fragment {
 
@@ -66,7 +69,6 @@ public class CustomerDetailsFragment extends Fragment {
      * @param param2 Parameter 2.
      * @return A new instance of fragment CustomerDetailsFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static CustomerDetailsFragment newInstance(String param1, String param2) {
         CustomerDetailsFragment fragment = new CustomerDetailsFragment();
         Bundle args = new Bundle();
@@ -134,6 +136,11 @@ public class CustomerDetailsFragment extends Fragment {
         });
     }
 
+    /**
+     * Private Helper method to cancel ride
+     * when user clicks cancel icon/button
+     *
+     * */
     private void cancelRide() {
         DatabaseReference rideRef = FirebaseDatabase.getInstance().getReference().child("rides").child(mAuth.getCurrentUser().getUid()).child(user.getKey());
         rideRef.addValueEventListener(new ValueEventListener() {

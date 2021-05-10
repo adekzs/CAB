@@ -41,6 +41,10 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.app.Activity.RESULT_OK;
 
+/**
+ * This fragment is used to setup the details of
+ * the driver/user.
+ * */
 public class RegisterUserDetailsFragment extends Fragment {
 
 

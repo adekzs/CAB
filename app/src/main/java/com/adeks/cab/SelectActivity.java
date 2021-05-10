@@ -9,7 +9,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.view.View;
-
+/**
+ * The Activity that hosts all fragments
+ * It is used for navigating between the fragments
+ * */
 public class SelectActivity extends AppCompatActivity {
 
     @Override

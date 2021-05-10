@@ -25,6 +25,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+/**
+ * This fragment is used to sigin either the user
+ * or the driver.
+ * */
 public class SignInFragment extends Fragment {
     private static final String TAG = "SignInFragment";
     private Boolean isDriver;

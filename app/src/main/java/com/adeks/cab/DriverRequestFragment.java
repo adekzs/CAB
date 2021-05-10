@@ -19,6 +19,13 @@ import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+
+/**
+ * Displays a custom dialog window which
+ * gives the driver two options to either
+ * accept a ride or cancel a ride
+ *
+ * */
 public class DriverRequestFragment extends DialogFragment {
 
     private static final String TAG = "DriverRequestFragment";

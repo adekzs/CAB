@@ -26,7 +26,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import org.w3c.dom.Text;
 
 /**
- * A simple {@link Fragment} subclass.
+ *This Fragment is used to register both new user and driver
+ * depending on the user selection.
  * Use the {@link RegisterDriverFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
